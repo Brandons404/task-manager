@@ -30,28 +30,23 @@ function Alert(props) {
 }
 
 function dailyCheck() {
-  const currentDay = getDay(new Date());
+  const currentWeekDay = getDay(new Date());
+  const currentDate = new Date();
   const oldTasks = api.getTasks();
 
   oldTasks.forEach((t, index) => {
     switch (t.freq) {
       case "daily":
-        if (t.oldDay < currentDay || (t.oldDay === 6 && currentDay === 0)) {
+        if (getDay(t.oldDay) !== currentWeekDay && t.oldDay < currentDate) {
           t.done = false;
           t.oldDay = currentDay;
           api.updateTask(t);
         }
         break;
       case "weekly":
-        if (t.oldDay === 6 && currentDay === 0) {
-          t.sun = false;
-          t.mon = false;
-          t.tue = false;
-          t.wed = false;
-          t.thu = false;
-          t.fri = false;
-          t.sat = false;
-          t.oldDay = currentDay;
+        if (currentWeekDay === 1 && getDay(t.oldDay) !== 1 && t.oldDay < currentDate) {
+          t.done = false;
+          t.oldDay = currentDate;
           api.updateTask(t);
         }
         break;
@@ -108,15 +103,8 @@ export default function App() {
         name,
         desc,
         freq,
-        sun: false,
-        mon: false,
-        tue: false,
-        wed: false,
-        thu: false,
-        fri: false,
-        sat: false,
         done: false,
-        oldDay: getDay(new Date()),
+        oldDay: new Date(),
       };
       api.addTask(task);
       setName("");
@@ -134,13 +122,6 @@ export default function App() {
 
   const updateDaily = (task) => {
     task.done = true;
-    api.updateTask(task);
-    const newTasks = api.getTasks();
-    setTasks(newTasks);
-  };
-
-  const updateWeekly = (task, day) => {
-    task[day] = true;
     api.updateTask(task);
     const newTasks = api.getTasks();
     setTasks(newTasks);
@@ -284,93 +265,11 @@ export default function App() {
                   <ul>
                     <li style={{ listStyleType: "none", textAlign: "left" }}>
                       <FormControlLabel
+                        disabled={t.done}
                         control={
-                          <Checkbox
-                            checked={t.sun}
-                            disabled={t.sun}
-                            onChange={() => updateWeekly(t, "sun")}
-                            color="primary"
-                          />
+                          <Checkbox checked={t.done} disabled={t.sun} onChange={() => updateDaily(t)} color="primary" />
                         }
-                        label="Sunday"
-                      />
-                    </li>
-                    <li style={{ listStyleType: "none", textAlign: "left" }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={t.mon}
-                            disabled={t.mon}
-                            onChange={() => updateWeekly(t, "mon")}
-                            color="primary"
-                          />
-                        }
-                        label="Monday"
-                      />
-                    </li>
-                    <li style={{ listStyleType: "none", textAlign: "left" }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={t.tue}
-                            disabled={t.tue}
-                            onChange={() => updateWeekly(t, "tue")}
-                            color="primary"
-                          />
-                        }
-                        label="Tuesday"
-                      />
-                    </li>
-                    <li style={{ listStyleType: "none", textAlign: "left" }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={t.wed}
-                            disabled={t.wed}
-                            onChange={() => updateWeekly(t, "wed")}
-                            color="primary"
-                          />
-                        }
-                        label="Wednesday"
-                      />
-                    </li>
-                    <li style={{ listStyleType: "none", textAlign: "left" }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={t.thu}
-                            disabled={t.thu}
-                            onChange={() => updateWeekly(t, "thu")}
-                            color="primary"
-                          />
-                        }
-                        label="Thursday"
-                      />
-                    </li>
-                    <li style={{ listStyleType: "none", textAlign: "left" }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={t.fri}
-                            disabled={t.fri}
-                            onChange={() => updateWeekly(t, "fri")}
-                            color="primary"
-                          />
-                        }
-                        label="Friday"
-                      />
-                    </li>
-                    <li style={{ listStyleType: "none", textAlign: "left" }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={t.sat}
-                            disabled={t.sat}
-                            onChange={() => updateWeekly(t, "sat")}
-                            color="primary"
-                          />
-                        }
-                        label="Saturday"
+                        label="Done"
                       />
                     </li>
                   </ul>

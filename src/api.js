@@ -32,6 +32,4 @@ export function deleteTask(task) {
   });
 
   local.setItem("taskList", JSON.stringify(allTasks));
-
-  console.log(allTasks);
 }
