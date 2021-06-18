@@ -39,7 +39,7 @@ function dailyCheck() {
       case "daily":
         if (getDay(t.oldDay) !== currentWeekDay && t.oldDay < currentDate) {
           t.done = false;
-          t.oldDay = currentDay;
+          t.oldDay = currentDate;
           api.updateTask(t);
         }
         break;
